@@ -12,10 +12,9 @@ class Users(db.Model):
     photo=db.Column(db.String(128),nullable=False)
     date_joined=db.Column(db.DateTime, default=datetime.now())
 
-    
 
 
-    def __init__(self,username,password,name,email,photo,date_joined):
+    def __init__(self,username,password,name,email,photo):
         self.username=username
         self.password = generate_password_hash(password, method='pbkdf2:sha256')
         self.name=name
