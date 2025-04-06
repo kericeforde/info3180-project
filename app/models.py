@@ -12,11 +12,11 @@ class Users(db.Model):
     photo=db.Column(db.String(128),nullable=False)
     date_joined=db.Column(db.DateTime, default=datetime.now())
 
-
+    profiles = db.relationship('Profile', backref='user', lazy=True)
 
     def __init__(self,username,password,name,email,photo):
         self.username=username
-        self.password = generate_password_hash(password, method='pbkdf2:sha256')
+        self.password = password
         self.name=name
         self.email=email
         self.photo=photo
@@ -58,7 +58,7 @@ class Profile(db.Model):
      religious=db.Column(db.Boolean,nullable=False)
      family_oriented=db.Column(db.Boolean,nullable=False)
 
-     def __init__(self,description,parish,biography,sex,race,birth_year,height,fav_cuisine,fav_color,fav_school_subject,political,religious,family_oriented):
+     def __init__(self,description,parish,biography,sex,race,birth_year,height,fav_cuisine,fav_color,fav_school_subject,political,religious,family_oriented, user_id_fk):
          
        self.description=description
        self.parish=parish
@@ -73,9 +73,13 @@ class Profile(db.Model):
        self.political=political
        self.religious=religious
        self.family_oriented=family_oriented
+       self.user_id_fk= user_id_fk
 
 
 class Favorite(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     user_id_fk=db.Column(db.Integer,db.ForeignKey(Users.id),nullable=False)
-    fav_user_id_fk=db.Column(db.Integer,db.ForeignKey(Profile.id),nullable=False)
+    fav_user_id_fk=db.Column(db.Integer,db.ForeignKey(Users.id),nullable=False)
+
+    user = db.relationship('Users', foreign_keys=[user_id_fk], backref='favorites', lazy=True)
+    favorite= db.relationship('Users', foreign_keys=[fav_user_id_fk], backref='favorited_by', lazy=True)

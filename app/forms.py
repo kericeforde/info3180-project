@@ -6,16 +6,16 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 class Signup(FlaskForm):
     username=StringField('Username',validators=[InputRequired()])
     password=PasswordField('Password',validators=[InputRequired()])
-    name=StringField('Name',validator=[InputRequired()])
-    email=EmailField('Email',validator=[InputRequired(),Email])
-    photo=FileField('Photo',validator=[FileRequired(message="File is required!"),FileAllowed(['png','jpeg','jpg'])])
+    name=StringField('Name',validators=[InputRequired()])
+    email=EmailField('Email',validators=[InputRequired(),Email()])
+    photo=FileField('Photo',validators=[FileRequired(message="File is required!"),FileAllowed(['png','jpeg','jpg'])])
 
 class Login(FlaskForm):
      username=StringField('Username',validators=[InputRequired()])
      password=PasswordField('Password',validators=[InputRequired()])
 
-class Profile(FlaskForm):
-     description=TextAreaField('Description',validator=[InputRequired()])
+class Profiles(FlaskForm):
+     description=TextAreaField('Description',validators=[InputRequired()])
      parish=StringField('Parish',validators=[InputRequired()])
      biography=TextAreaField('Biography',validator=[InputRequired()])
      sex=StringField('Sex',validators=[InputRequired(message="Male or Female")])
@@ -23,8 +23,9 @@ class Profile(FlaskForm):
      birth_year=IntegerField('Parish',validators=[InputRequired()])
      height=FloatField('Height',validators=[InputRequired()])
      fav_cuisine=StringField('FavCuisine',validators=[InputRequired()])
+     fav_color=StringField('FavColor',validators=[InputRequired()])
      fav_school_subject= StringField('FavSchoolSubject',validators=[InputRequired()])
      political=BooleanField('Political')
-     religion=BooleanField('Religion')
+     religious=BooleanField('Religious')
      family_oriented=BooleanField('Family Oriented')
      
