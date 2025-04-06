@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 csrf = CSRFProtect(app)  
 
-app.config['WTF_CSRF_ENABLED'] = False
+
 
 db=SQLAlchemy(app)
 # Flask-Login login manager
