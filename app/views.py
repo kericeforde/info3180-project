@@ -19,12 +19,17 @@ from app.models import Favorite
 import os
 from datetime import datetime
 from sqlalchemy import func
+from flask_wtf.csrf import generate_csrf
 
 
 
 ###
 # Routing for your application.
 ###
+
+@app.route('/api/v1/csrf-token', methods=['GET'])
+def get_csrf():
+    return jsonify({'csrf_token': generate_csrf()})
 
 @app.route('/')
 def index():
@@ -52,13 +57,33 @@ def register():
         
         existingUser = Users.query.filter_by(username=username).first()
         if existingUser:
-            return jsonify({'error':'Username already exists!'})
-        else:
-            users=Users(username=username,password=generate_password_hash(password,method='pbkdf2:sha256'),name=name,email=email,photo=photoname)
-            db.session.add(users)
-            db.session.commit()
-            return jsonify({'message':'Account Created Successfully!'}),201
-    return jsonify({'errors':form_errors(form)}),400
+            return jsonify({
+                "success": False,
+                "errors": {
+                    "username": ["Username already exists!"]
+                }
+            }), 409 
+
+        # Save image to uploads folder
+        photoname = secure_filename(photo.filename)
+        photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photoname)
+        photo.save(photo_path)
+
+        # Add user to database
+        user = Users(username=username,password=generate_password_hash(password, method='pbkdf2:sha256'),name=name,email=email,photo=photoname
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "message": "Account Created Successfully!"
+        }), 201
+
+    return jsonify({
+        "success": False,
+        "errors": form_errors(form)
+    }), 400
 
 #Login user
 @app.route('/api/auth/login',methods=['GET','POST'])
@@ -72,10 +97,20 @@ def login():
         user = Users.query.filter_by(username=username).first()
         
         if user and check_password_hash(user.password, password):
-            login_user(user) 
-            return jsonify({"message":"Login Successful!"})
-        return(jsonify({'message':'Incorrect Login: Username or password may be incorrect'}))
-    return jsonify({'errors':form_errors(form)}),400
+            login_user(user)
+            return jsonify({"success": True, "message": "Login Successful!"})
+
+        return jsonify({
+            "success": False,
+            "errors": {
+                "login": ["Incorrect Login: Username or password may be incorrect"]
+            }
+        }), 401
+
+    return jsonify({
+        "success": False,
+        "errors": form_errors(form)
+    }), 400
 
 #Logout user
 @app.route('/api/auth/logout',methods=['GET','POST'])

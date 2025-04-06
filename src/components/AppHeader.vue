@@ -1,8 +1,8 @@
 <template>
   <header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <nav class="navbar navbar-expand-lg  fixed-top">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">VueJS with Flask</a>
+        <a class="navbar-brand" href="/">Jam-Date</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -16,11 +16,18 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <RouterLink to="/" class="nav-link active">Home</RouterLink>
+
+            <li class="nav-item" v-if="isLoggedIn">
+              <RouterLink to="/dashboard" class="nav-link">Dashboard</RouterLink>
             </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/about">About</RouterLink>
+            <li class="nav-item" v-if="isLoggedIn">
+              <RouterLink to="/reports" class="nav-link">View Reports</RouterLink>
+            </li>
+            <li class="nav-item" v-if="isLoggedIn">
+              <RouterLink to="/profile" class="nav-link">My Profile</RouterLink>
+            </li>
+            <li class="nav-item" v-if="isLoggedIn">
+              <button @click="logout" class="nav-link btn btn-link text-white">Logout</button>
             </li>
           </ul>
         </div>
@@ -30,9 +37,45 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const isLoggedIn = ref(false);
+
+
+const router = useRouter();
+
+const logout = () => {
+  isLoggedIn.value = false; 
+  router.push('/'); 
+};
 </script>
 
-<style>
-/* Add any component specific styles here */
+<style >
+
+.navbar,header {
+  background-color: #108f21;
+  
+}
+
+.navbar-nav .nav-link {
+  color: white;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #f8f9fa;
+}
+
+.navbar-toggler-icon {
+  background-color: white;
+}
+
+.navbar-nav .btn-link {
+  text-decoration: none;
+  color: white;
+}
+
+.navbar-nav .btn-link:hover {
+  color: #f8f9fa;
+}
 </style>
