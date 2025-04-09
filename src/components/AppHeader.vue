@@ -17,16 +17,19 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto">
 
-            <li class="nav-item" v-if="isLoggedIn">
+            <li class="nav-item" v-if="auth.isLoggedIn">
               <RouterLink to="/dashboard" class="nav-link">Dashboard</RouterLink>
             </li>
-            <li class="nav-item" v-if="isLoggedIn">
+            <li class="nav-item" v-if="auth.isLoggedIn">
               <RouterLink to="/reports" class="nav-link">View Reports</RouterLink>
             </li>
-            <li class="nav-item" v-if="isLoggedIn">
+            <li class="nav-item" v-if="auth.isLoggedIn">
               <RouterLink to="/profile" class="nav-link">My Profile</RouterLink>
             </li>
-            <li class="nav-item" v-if="isLoggedIn">
+            <li class="nav-item" v-if="auth.isLoggedIn">
+              <RouterLink to="/profiles/new" class="nav-link">Create Profile</RouterLink>
+            </li>
+            <li class="nav-item" v-if="auth.isLoggedIn">
               <button @click="logout" class="nav-link btn btn-link text-white">Logout</button>
             </li>
           </ul>
@@ -38,17 +41,21 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-const isLoggedIn = ref(false);
-
+import { RouterLink,useRouter } from 'vue-router';
+import { auth,logoutUser } from '../auth.js';
 
 const router = useRouter();
 
-const logout = () => {
-  isLoggedIn.value = false; 
-  router.push('/'); 
-};
+function logout() {
+  fetch('/api/auth/logout', { method: 'POST' }) 
+    .finally(() => {
+      logoutUser();
+      router.push('/logout');
+    });
+}
+
+
+
 </script>
 
 <style >

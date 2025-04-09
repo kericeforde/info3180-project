@@ -118,7 +118,7 @@ def login():
 def logout():
     """Logs out the user ."""
     logout_user()  
-    return jsonify({"message":"Logout Successful!"})
+    return jsonify({"success":True,"message":"Logout Successful!"})
 
 @app.route("/api/photo/<filename>")
 def getphoto(filename):
@@ -305,6 +305,8 @@ def get_matches(profile_id):
 @app.route('/api/search', methods=['GET'])
 @login_required
 def search():
+    if not current_user.profiles or len(current_user.profiles) == 0:
+        return jsonify({"error": "You must create a profile to view others."}), 403
     
     name = request.args.get('name', default='', type=str)
     birth_year = request.args.get('birth_year', default='', type=int)
@@ -313,7 +315,7 @@ def search():
 
     currentUserProfiles = [profile.id for profile in current_user.profiles] if current_user.profiles else []
 
-    query = Profile.query
+    query = db.session.query(Profile).join(Users, Profile.user_id_fk == Users.id)
 
     if name:
         query = query.filter(Users.name.ilike(f"%{name}%"))
@@ -326,7 +328,10 @@ def search():
 
     if currentUserProfiles:
         query = query.filter(Profile.id.notin_(currentUserProfiles))
-
+    
+    if not any([name, birth_year, sex, race]):
+        query = query.order_by(Profile.id.desc()).limit(4)
+        
     profiles = query.all()
 
     profilelist = []

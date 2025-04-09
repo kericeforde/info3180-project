@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import LoginForm from '../components/LoginForm.vue'
+import ProfileForm from '../components/ProfileForm.vue'
+import DashboardView from '../views/DashboardView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,12 +26,38 @@ const router = createRouter({
       component: HomeView
     },
     {
+      path: '/logout',
+      name: 'logout',
+      component: HomeView
+    },
+    {
       path: '/register',
       name: 'register',
       component: HomeView
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: DashboardView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/profiles/new',
+      name: 'profileForm',
+      component: ProfileForm,
+      meta: { requiresAuth: true }
     }
+    
 
   ]
+   
 })
+router.beforeEach((to, from, next) => {
+  const loggedIn = localStorage.getItem('isLoggedIn')==='true'; 
 
+  if (to.meta.requiresAuth && !loggedIn) {
+    next({ name: 'home' }); 
+  } else {
+    next();
+  }})
 export default router

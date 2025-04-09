@@ -19,7 +19,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";  
-
+import { setLoginState } from '../auth.js';
 
 let username = ref("");
 let password = ref("");
@@ -67,8 +67,10 @@ function login() {
       errors.value = [];
       username.value = "";
       password.value = "";
-
-      router.push({ name: 'about' });
+      
+      setLoginState(true);
+      router.push({ name: 'dashboard' });
+      
     }
   })
   .catch(error => console.log(error));
