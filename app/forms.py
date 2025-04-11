@@ -17,10 +17,10 @@ class Login(FlaskForm):
 class Profiles(FlaskForm):
      description=TextAreaField('Description',validators=[InputRequired()])
      parish=StringField('Parish',validators=[InputRequired()])
-     biography=TextAreaField('Biography',validator=[InputRequired()])
-     sex=StringField('Sex',validators=[InputRequired(message="Male or Female")])
+     biography=TextAreaField('Biography',validators=[InputRequired()])
+     sex=StringField('Sex',validators=[InputRequired()])
      race=StringField('Race',validators=[InputRequired()])
-     birth_year=IntegerField('Parish',validators=[InputRequired()])
+     birth_year=IntegerField('Birth Year',validators=[InputRequired()])
      height=FloatField('Height',validators=[InputRequired()])
      fav_cuisine=StringField('FavCuisine',validators=[InputRequired()])
      fav_color=StringField('FavColor',validators=[InputRequired()])

@@ -24,10 +24,12 @@
               <RouterLink to="/reports" class="nav-link">View Reports</RouterLink>
             </li>
             <li class="nav-item" v-if="auth.isLoggedIn">
-              <RouterLink to="/profile" class="nav-link">My Profile</RouterLink>
+              <button @click="myprofile" class="nav-link btn btn-link text-white">My Profile</button>
+
             </li>
             <li class="nav-item" v-if="auth.isLoggedIn">
               <RouterLink to="/profiles/new" class="nav-link">Create Profile</RouterLink>
+
             </li>
             <li class="nav-item" v-if="auth.isLoggedIn">
               <button @click="logout" class="nav-link btn btn-link text-white">Logout</button>
@@ -40,18 +42,42 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed ,onMounted} from 'vue';
 import { RouterLink,useRouter } from 'vue-router';
-import { auth,logoutUser } from '../auth.js';
+import { auth,logoutUser,removeToken,removeUserId, getToken} from '../auth.js';
 
-const router = useRouter();
+let router = useRouter();
 
+
+
+//   computed: {
+//     userId() {
+//       return localStorage.getItem('user_id');
+//     }
+//   }
+// }
 function logout() {
-  fetch('/api/auth/logout', { method: 'POST' }) 
-    .finally(() => {
-      logoutUser();
+  let token = getToken(); 
+  fetch('/api/auth/logout', {
+    //method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+
+    },
+  } ) 
+    .then(() => {
+      logoutUser();  
+      removeToken();
+      token = null;
+      removeUserId();
       router.push('/logout');
     });
+}
+
+function myprofile()
+{
+  let userIdRef = ref(localStorage.getItem('user_id'));
+  router.push({ name: 'myProfileView', params: { users_id: userIdRef.value } });
 }
 
 

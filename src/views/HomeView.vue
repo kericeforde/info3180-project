@@ -40,12 +40,25 @@ const goToRegister = () => {
 <style scoped>
 .home {
   text-align: center;
- 
+
+  /* Background image styling */
   background-image: url(../assets/back.png);
   background-repeat: no-repeat;
-  background-size:cover;
+  background-size: cover;
   background-position: center top;
-  height:100vh;
+  background-attachment: fixed; /* Optional: for parallax effect */
+
+  /* Fullscreen container */
+  height: 100vh;
+  width: 100vw;
+
+  /* Flexbox to center content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* Horizontally center content */
+  justify-content: center; /* Vertically center content */
+
+  overflow: auto;
  
   
  

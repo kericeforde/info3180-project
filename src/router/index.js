@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ProfileForm from '../components/ProfileForm.vue'
 import DashboardView from '../views/DashboardView.vue'
-
+import MyProfileView from '../views/MyProfileView.vue'
+import ProfileDetailsView from '../views/ProfileDetailsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,8 +47,19 @@ const router = createRouter({
       name: 'profileForm',
       component: ProfileForm,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/users/:users_id',
+      name: 'myProfileView',
+      component: MyProfileView,
+      meta: { requiresAuth: true }
+    },
+    {path: '/profiles/:profile_id',
+      name: 'profileDetailsView',
+      component: ProfileDetailsView,
+      meta: { requiresAuth: true }
+      
     }
-    
 
   ]
    
