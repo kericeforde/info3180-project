@@ -126,7 +126,7 @@ def login():
 # Logout user
 
 
-@app.route('/api/auth/logout')
+@app.route('/api/auth/logout', methods=['POST'])
 def logout():
     token = request.headers.get('Authorization').split(" ")[1]
     try:
@@ -281,19 +281,28 @@ def get_profile(profile_id):
 @app.route('/api/profiles/<int:user_id>/favorite', methods=['POST'])
 @login_required
 def addfavorite(user_id):
-    if user_id == current_user.id:
-        return jsonify({"error": "You cannot favorite your own profile."}), 400
+    token = request.headers.get('Authorization').split(" ")[1]
+    try:
+        decoded_token = jwt.decode(
+            token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        if decoded_token['user_id'] == current_user.id:
+            if user_id == current_user.id:
+                return jsonify({"error": "You cannot favorite your own profile."}), 400
 
-    existFav = Favorite.query.filter_by(
-        user_id_fk=current_user.id, fav_user_id_fk=user_id).first()
-    if existFav:
-        return jsonify({"message": "This user is already in your favorites."}), 200
+            existFav = Favorite.query.filter_by(
+                user_id_fk=current_user.id, fav_user_id_fk=user_id).first()
+            if existFav:
+                return jsonify({"message": "This user is already in your favorites."}), 200
 
-    newfav = Favorite(user_id_fk=current_user.id, fav_user_id_fk=user_id)
-    db.session.add(newfav)
-    db.session.commit()
+            newfav = Favorite(user_id_fk=current_user.id, fav_user_id_fk=user_id)
+            db.session.add(newfav)
+            db.session.commit()
 
-    return jsonify({"message": "Profile added to favorites!"}), 201
+            return jsonify({"message": "Profile added to favorites!"}), 201
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Get a list of all profiles that match a specific criteria.
 
@@ -301,65 +310,74 @@ def addfavorite(user_id):
 @app.route('/api/profiles/matches/<int:profile_id>', methods=['GET'])
 @login_required
 def get_matches(profile_id):
+    token = request.headers.get('Authorization').split(" ")[1]
+    try:
+        decoded_token = jwt.decode(
+            token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        if decoded_token['user_id'] == current_user.id:
 
-    currentprofile = Profile.query.get(profile_id)
+            currentprofile = Profile.query.get(profile_id)
 
-    currentuser = Users.query.get(currentprofile.user_id_fk)
+            currentuser = Users.query.get(currentprofile.user_id_fk)
 
-    other_profiles = Profile.query.filter(Profile.id != profile_id).all()
-    print(other_profiles)
-    matching_profiles = []
+            other_profiles = Profile.query.filter(Profile.id != profile_id).all()
+            print(other_profiles)
+            matching_profiles = []
 
-    for profile in other_profiles:
-        
-        if profile.user_id_fk == currentuser.id:
-            continue
+            for profile in other_profiles:
+                
+                if profile.user_id_fk == currentuser.id:
+                    continue
 
-        age_diff = abs(currentprofile.birth_year - profile.birth_year)
-        print(age_diff)
-        print("here")
-        if age_diff > 5:
-            continue
+                age_diff = abs(currentprofile.birth_year - profile.birth_year)
+                print(age_diff)
+                print("here")
+                if age_diff > 5:
+                    continue
 
-        height_diff = abs(currentprofile.height - profile.height)
-        if height_diff < 3 or height_diff > 10:
-            continue
-        
-        matching_fields = 0
-        if currentprofile.fav_cuisine.lower() == profile.fav_cuisine.lower():
-            matching_fields += 1
-            
-        if currentprofile.fav_color.lower() == profile.fav_color.lower():
-            matching_fields += 1
-        if currentprofile.fav_school_subject.lower() == profile.fav_school_subject.lower():
-            matching_fields += 1
-        if currentprofile.political == profile.political:
-            matching_fields += 1
-        if currentprofile.religious == profile.religious:
-            matching_fields += 1
-        if currentprofile.family_oriented == profile.family_oriented:
-            matching_fields += 1
-        
-        print(matching_fields)
-        if matching_fields >= 3:
+                height_diff = abs(currentprofile.height - profile.height)
+                if height_diff < 3 or height_diff > 10:
+                    continue
+                
+                matching_fields = 0
+                if currentprofile.fav_cuisine.lower() == profile.fav_cuisine.lower():
+                    matching_fields += 1
+                    
+                if currentprofile.fav_color.lower() == profile.fav_color.lower():
+                    matching_fields += 1
+                if currentprofile.fav_school_subject.lower() == profile.fav_school_subject.lower():
+                    matching_fields += 1
+                if currentprofile.political == profile.political:
+                    matching_fields += 1
+                if currentprofile.religious == profile.religious:
+                    matching_fields += 1
+                if currentprofile.family_oriented == profile.family_oriented:
+                    matching_fields += 1
+                
+                print(matching_fields)
+                if matching_fields >= 3:
 
-            user = Users.query.get(profile.user_id_fk)
-            matching_profiles.append({
-                "profile_id": profile.id,
-                "user_id": profile.user_id_fk,
-                "name": user.name,
-                "photo": f"/api/photo/{user.photo}",
-                "birth_year": currentprofile.birth_year,
-                "height": profile.height,
-                "fav_cuisine": profile.fav_cuisine,
-                "fav_color": profile.fav_color,
-                "fav_school_subject": profile.fav_school_subject,
-                "political": profile.political,
-                "religious": profile.religious,
-                "family_oriented": profile.family_oriented
-            })
+                    user = Users.query.get(profile.user_id_fk)
+                    matching_profiles.append({
+                        "profile_id": profile.id,
+                        "user_id": profile.user_id_fk,
+                        "name": user.name,
+                        "photo": f"/api/photo/{user.photo}",
+                        "birth_year": currentprofile.birth_year,
+                        "height": profile.height,
+                        "fav_cuisine": profile.fav_cuisine,
+                        "fav_color": profile.fav_color,
+                        "fav_school_subject": profile.fav_school_subject,
+                        "political": profile.political,
+                        "religious": profile.religious,
+                        "family_oriented": profile.family_oriented
+                    })
 
-    return jsonify({"matching_profiles": matching_profiles}), 200
+            return jsonify({"matching_profiles": matching_profiles}), 200
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # Search for profiles by name, birth year, sex, race, or any combination of these four (4) fields; and return JSON results
@@ -429,74 +447,57 @@ def search():
 
 
 @app.route('/api/users/<int:user_id>', methods=['GET'])
-# @login_required
+@login_required
 def get_user_details(user_id):
-    # Check if the user exists
-    user = Users.query.get(user_id)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
+    token = request.headers.get('Authorization').split(" ")[1]
+    try:
+        decoded_token = jwt.decode(
+            token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        if decoded_token['user_id'] == current_user.id:
+            # Check if the user exists
+            user = Users.query.get(user_id)
+            if not user:
+                return jsonify({"error": "User not found"}), 404
 
-    # Get all profiles for the user
-    profiles = Profile.query.filter_by(user_id_fk=user.id).all()
-    if not profiles:
-        return jsonify({"error": "Profiles not found"}), 404
+            # Get all profiles for the user
+            profiles = Profile.query.filter_by(user_id_fk=user.id).all()
+            if not profiles:
+                return jsonify({"error": "Profiles not found"}), 404
 
-    # Prepare the list of profile data to return
-    profiles_data = []
-    for profile in profiles:
-        profiles_data.append({
-            "profile_id": profile.id,
-            "description": profile.description,
-            "parish": profile.parish,
-            "biography": profile.biography,
-            "sex": profile.sex,
-            "race": profile.race,
-            "birth_year": profile.birth_year,
-            "height": profile.height,
-            "fav_cuisine": profile.fav_cuisine,
-            "fav_color": profile.fav_color,
-            "fav_school_subject": profile.fav_school_subject,
-            "political": profile.political,
-            "religious": profile.religious,
-            "family_oriented": profile.family_oriented
-        })
+            # Prepare the list of profile data to return
+            profiles_data = []
+            for profile in profiles:
+                profiles_data.append({
+                    "profile_id": profile.id,
+                    "description": profile.description,
+                    "parish": profile.parish,
+                    "biography": profile.biography,
+                    "sex": profile.sex,
+                    "race": profile.race,
+                    "birth_year": profile.birth_year,
+                    "height": profile.height,
+                    "fav_cuisine": profile.fav_cuisine,
+                    "fav_color": profile.fav_color,
+                    "fav_school_subject": profile.fav_school_subject,
+                    "political": profile.political,
+                    "religious": profile.religious,
+                    "family_oriented": profile.family_oriented
+                })
 
-    # Return user and all associated profiles
-    return jsonify({
-        "user_id": user.id,
-        "username": user.username,
-        "name": user.name,
-        "email": user.email,
-        "photo": f"/api/photo/{user.photo}",
-        "profiles": profiles_data,
-        "date_joined": user.date_joined.strftime("%Y-%m-%d"),
-    }), 200
-
-
-# Optional: Create a decorator to require JWT for any route
-
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        if 'Authorization' in request.headers:
-            parts = request.headers['Authorization'].split()
-            if len(parts) == 2 and parts[0] == 'Bearer':
-                token = parts[1]
-        if not token:
-            return jsonify({"error": "Token is missing"}), 401
-
-        try:
-            decoded = jwt.decode(
-                token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            kwargs['auth_user_id'] = decoded['user_id']
-        except jwt.ExpiredSignatureError:
-            return jsonify({"error": "Token has expired"}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({"error": "Invalid token"}), 401
-
-        return f(*args, **kwargs)
-    return decorated
+            # Return user and all associated profiles
+            return jsonify({
+                "user_id": user.id,
+                "username": user.username,
+                "name": user.name,
+                "email": user.email,
+                "photo": f"/api/photo/{user.photo}",
+                "profiles": profiles_data,
+                "date_joined": user.date_joined.strftime("%Y-%m-%d"),
+            }), 200
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/api/users/<int:user_id>/favourites', methods=['GET'])
@@ -547,39 +548,49 @@ def get_favourites(user_id):
 @app.route('/api/users/favourites/<int:N>', methods=['GET'])
 @login_required
 def getTopFavs(N):
-    sort_by = request.args.get('sort', default='fav_count', type=str)
+    token = request.headers.get('Authorization').split(" ")[1]
+    try:
+         decoded_token = jwt.decode(
+            token, app.config['SECRET_KEY'], algorithms=['HS256'])
+         if decoded_token['user_id'] == current_user.id:
+            sort_by = request.args.get('sort', default='fav_count', type=str)
 
-    fav_counts = db.session.query(
-        Favorite.fav_user_id_fk,
-        func.count(Favorite.fav_user_id_fk).label('fav_count')
-    ).group_by(Favorite.fav_user_id_fk).all()
+            fav_counts = db.session.query(
+                Favorite.fav_user_id_fk,
+                func.count(Favorite.fav_user_id_fk).label('fav_count')
+            ).group_by(Favorite.fav_user_id_fk).all()
 
-    top_fav_users = []
-    for fav in fav_counts:
-        profile = Profile.query.get(fav.fav_user_id_fk)
-        if profile:
-            user = Users.query.get(profile.user_id_fk)
-            if user:
-                age = datetime.now().year - profile.birth_year
-                top_fav_users.append({
-                    "name": user.name,
-                    "parish": profile.parish,
-                    "age": age,
-                    "photo": f"/api/photo/{user.photo}",
-                    "fav_count": fav.fav_count
-                })
+            top_fav_users = []
+            for fav in fav_counts:
+                profile = Profile.query.get(fav.fav_user_id_fk)
+                if profile:
+                    user = Users.query.get(profile.user_id_fk)
+                    if user:
+                        age = datetime.now().year - profile.birth_year
+                        top_fav_users.append({
+                            "name": user.name,
+                            "parish": profile.parish,
+                            "age": age,
+                            "photo": f"/api/photo/{user.photo}",
+                            "fav_count": fav.fav_count
+                        })
 
-    if sort_by == 'name':
-        top_fav_users.sort(key=lambda x: x['name'].lower())
-    elif sort_by == 'parish':
-        top_fav_users.sort(key=lambda x: x['parish'].lower())
-    elif sort_by == 'age':
-        top_fav_users.sort(key=lambda x: x['age'])
-    else:
+            if sort_by == 'name':
+                top_fav_users.sort(key=lambda x: x['name'].lower())
+            elif sort_by == 'parish':
+                top_fav_users.sort(key=lambda x: x['parish'].lower())
+            elif sort_by == 'age':
+                top_fav_users.sort(key=lambda x: x['age'])
+            else:
 
-        top_fav_users.sort(key=lambda x: x['fav_count'], reverse=True)
+                top_fav_users.sort(key=lambda x: x['fav_count'], reverse=True)
 
-    return jsonify({"top_favorites": top_fav_users[:N]}), 200
+            return jsonify({"top_favorites": top_fav_users[:N]}), 200
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 @login_manager.user_loader
