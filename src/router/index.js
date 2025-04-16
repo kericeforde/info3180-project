@@ -4,6 +4,8 @@ import ProfileForm from '../components/ProfileForm.vue'
 import DashboardView from '../views/DashboardView.vue'
 import MyProfileView from '../views/MyProfileView.vue'
 import ProfileDetailsView from '../views/ProfileDetailsView.vue'
+import MatchMeView from '../views/MatchMeView.vue'
+import ReportsView from '../views/ReportsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -59,11 +61,25 @@ const router = createRouter({
       component: ProfileDetailsView,
       meta: { requiresAuth: true }
       
-    }
+    },
+    // Registering the MatchMe view
+    {
+      path: '/matches/:profile_id',
+      name: 'matchMeView',
+      component: MatchMeView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/profiles/favourites',
+      name: 'reportsView',
+      component:ReportsView,
+      meta: { requiresAuth: true }
+    } 
 
   ]
    
 })
+
 router.beforeEach((to, from, next) => {
   const loggedIn = localStorage.getItem('isLoggedIn')==='true'; 
 

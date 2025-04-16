@@ -307,25 +307,28 @@ def get_matches(profile_id):
     currentuser = Users.query.get(currentprofile.user_id_fk)
 
     other_profiles = Profile.query.filter(Profile.id != profile_id).all()
-
+    print(other_profiles)
     matching_profiles = []
 
     for profile in other_profiles:
-
+        
         if profile.user_id_fk == currentuser.id:
             continue
 
-        age_diff = abs(currentuser.birth_year - profile.birth_year)
+        age_diff = abs(currentprofile.birth_year - profile.birth_year)
+        print(age_diff)
+        print("here")
         if age_diff > 5:
             continue
 
-        height_diff = abs(currentuser.height - profile.height)
+        height_diff = abs(currentprofile.height - profile.height)
         if height_diff < 3 or height_diff > 10:
             continue
-
+        
         matching_fields = 0
         if currentprofile.fav_cuisine.lower() == profile.fav_cuisine.lower():
             matching_fields += 1
+            
         if currentprofile.fav_color.lower() == profile.fav_color.lower():
             matching_fields += 1
         if currentprofile.fav_school_subject.lower() == profile.fav_school_subject.lower():
@@ -336,7 +339,8 @@ def get_matches(profile_id):
             matching_fields += 1
         if currentprofile.family_oriented == profile.family_oriented:
             matching_fields += 1
-
+        
+        print(matching_fields)
         if matching_fields >= 3:
 
             user = Users.query.get(profile.user_id_fk)
@@ -345,7 +349,7 @@ def get_matches(profile_id):
                 "user_id": profile.user_id_fk,
                 "name": user.name,
                 "photo": f"/api/photo/{user.photo}",
-                "age": currentprofile.birth_year,
+                "birth_year": currentprofile.birth_year,
                 "height": profile.height,
                 "fav_cuisine": profile.fav_cuisine,
                 "fav_color": profile.fav_color,

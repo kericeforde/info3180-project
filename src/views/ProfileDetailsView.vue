@@ -211,6 +211,7 @@ button:hover{
   padding: 20px;
   border-radius: 20px;
   margin-bottom: 5px;
+  width:fit-content;
   
 }
 

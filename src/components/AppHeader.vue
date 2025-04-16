@@ -21,7 +21,7 @@
               <RouterLink to="/dashboard" class="nav-link">Dashboard</RouterLink>
             </li>
             <li class="nav-item" v-if="auth.isLoggedIn">
-              <RouterLink to="/reports" class="nav-link">View Reports</RouterLink>
+              <RouterLink to="/profiles/favourites" class="nav-link">View Reports</RouterLink>
             </li>
             <li class="nav-item" v-if="auth.isLoggedIn">
               <button @click="myprofile" class="nav-link btn btn-link text-white">My Profile</button>

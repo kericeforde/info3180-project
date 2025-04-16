@@ -25,7 +25,8 @@
           <p><strong>Political Views:</strong> {{ prof.political }}</p>
           <p><strong>Religious Views:</strong> {{ prof.religious }}</p>
           <p><strong>Family Oriented:</strong> {{ prof.family_oriented }}</p>
-          <button>Match Me</button>
+          <!-- Changed Button : To add functionality using @click-->
+          <button @click = "goToMatch(prof.profile_id)">MatchMe</button>
         </div>
       </div>
   </div>
@@ -39,13 +40,21 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
-const route = useRoute();
+const router = useRouter();
 const user = ref(null);
 const error = ref('');
 const current_user = ref(localStorage.getItem('user_id')); 
 console.log(current_user.value);
+
+// There should be a function for the Match Me Button Which I'll add Here
+// It's purpose is to access "MatchMeView.vue" when the button is pressed
+function goToMatch(profile_id)
+{
+  router.push({ name: 'matchMeView', params: {profile_id: profile_id}});
+}
+
 
 onMounted(async () => {
   try {
