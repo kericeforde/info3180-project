@@ -99,25 +99,27 @@ function login() {
 .form-container {
   background-color: white;
   border-radius: 10px;
-  padding: 15px;
+  padding: 10%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 250px;
+  max-width: 300%;
+  height:100%;
+  max-height:250%;
 
   text-align: center;
   margin: auto;
 }
 
 h2 {
-  margin-bottom: 5px;
-  font-size: 20px;
+  margin-bottom: 9px;
+  font-size: 25px;
   color: #333;
 }
 
 input {
   width: 100%;
-  padding: 7px;
-  margin: 3px 0;
+  padding: 10px;
+  margin: 5px 0;
   border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 16px;
@@ -126,11 +128,11 @@ input {
 
 button {
   width: 100%;
-  padding: 5px;
+  padding: 7px;
   background-color: #4caf50;
   color: white;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -148,7 +150,7 @@ button {
   box-sizing: border-box;
 }
 .alert {
-  padding: 0px;
-  font-size: 9px;
+  padding: 2px;
+  font-size: 15px;
 }
 </style>
