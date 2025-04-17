@@ -74,7 +74,7 @@
       const res = await fetch(`/api/users/${userId}/favourites`, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
           "X-CSRFToken": csrf_token.value,
         }
       });
@@ -94,7 +94,7 @@
       const res = await fetch(`/api/users/favourites/20?sort=${currentSort.value}`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
           "X-CSRFToken": csrf_token.value,
         },
       });

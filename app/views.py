@@ -52,10 +52,6 @@ def register():
         email = form.email.data
         photo = form.photo.data
 
-        # Saving image to uploads folder
-        photoname = secure_filename(photo.filename)  # Secure the filename
-        path = os.path.join(app.config['UPLOAD_FOLDER'], photoname)
-        photo.save(path)
 
         # Saving from data to database table Users
 

@@ -81,6 +81,7 @@ function getCsrfToken() {
 }
   
 onMounted(() => {
+  getCsrfToken();
   fetch("/api/profiles", {
     method: 'GET',
     headers: {
@@ -99,7 +100,7 @@ onMounted(() => {
     })
     .catch((error) => console.error("Error fetching profiles:", error.message));
 
-  getCsrfToken();});
+ });
 
 
 const namesearch = ref(false);
@@ -257,6 +258,7 @@ button:hover {
   
   align-items: center;
 }
+
 .dis{
   display:grid;
   justify-content: center;

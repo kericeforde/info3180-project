@@ -7,7 +7,7 @@
   
       <div v-if="matches" class="match-grid">
         
-        <div v-for="match in matches" :key="match.profile_id" class="match-card">
+        <div v-for="match in matches" :key="match.profile_id" class="match-card" @click="goToProfile(match.profile_id, match.user_id)" >
           <img :src="match.photo" alt="Profile Photo" class="profile-photo" />
           <p><strong>Name:</strong> {{ match.name }}</p>
 
@@ -31,13 +31,13 @@
   <script setup>
 
   import { ref, onMounted } from 'vue';
-  import { useRoute } from 'vue-router';
+  import { useRouter,useRoute} from 'vue-router';
   import { getToken } from '../auth.js';
   
   const route = useRoute();
   const profileId = route.params.profile_id;
   const token = getToken();
-  
+  const router = useRouter();
   const csrf_token = ref("");
   const matches = ref([]);
   const loading = ref(true);
@@ -75,6 +75,13 @@
       loading.value = false;
     }
   }
+
+  //With the use of this function clicking on an image takes you to the persons profile
+  function goToProfile(profile_id, user_id) {
+    localStorage.setItem("user_details_id", user_id);
+    router.push({ name: "profileDetailsView", params: { profile_id } });
+  }
+  
   
   onMounted(async () => {
     getCsrfToken();

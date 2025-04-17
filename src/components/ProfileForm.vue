@@ -54,24 +54,24 @@
       <label>
         Political?      
         <select v-model="political">
-          <option value="TRUE">Yes</option>
-          <option value="FALSE">No</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
         </select>
       </label><br/>
 
     <label>
       Religious?
       <select v-model="religious">
-        <option value="TRUE">Yes</option>
-        <option value="FALSE">No</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
       </select>
     </label><br/>
 
     <label>
       Family Oriented?
       <select v-model="familyOriented">
-        <option value="TRUE">Yes</option>
-        <option value="FALSE">No</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
       </select>
     </label><br/>
 
@@ -190,8 +190,24 @@ function resetForm() {
  background-position:center top ;
  background-size: cover;
  min-height:210vh;
+ 
 
 
+}
+@media (max-width: 600px) {
+    .content {
+        min-height: 150vh;  
+        max-height: 210vh; 
+        
+    }
+}
+
+@media (min-width: 1200px) {
+    .content {
+        min-height: 150vh; 
+        max-height: 210vh; 
+        
+    }
 }
 
 form {

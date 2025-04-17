@@ -41,12 +41,14 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { getToken } from '../auth.js'; 
 
 const router = useRouter();
 const user = ref(null);
 const error = ref('');
 const current_user = ref(localStorage.getItem('user_id')); 
-console.log(current_user.value);
+let csrf_token = ref("");
+const token = getToken(); 
 
 // There should be a function for the Match Me Button Which I'll add Here
 // It's purpose is to access "MatchMeView.vue" when the button is pressed
@@ -55,12 +57,26 @@ function goToMatch(profile_id)
   router.push({ name: 'matchMeView', params: {profile_id: profile_id}});
 }
 
+function getCsrfToken() {
+  fetch('/api/v1/csrf-token')
+    .then(response => response.json())
+    .then(data => {
+      csrf_token.value = data.csrf_token;
+    })
+    .catch(error => console.log(error));
+}
 
 onMounted(async () => {
+  getCsrfToken();
   try {
     const res = await fetch(`/api/users/${current_user.value}`, {
       credentials: 'include',
-    });
+      headers: {
+      'Authorization': `Bearer ${token}`,
+      'X-CSRFToken': csrf_token.value
+    },
+      method: 'GET',
+    } );
 
     if (!res.ok) {
       const errorData = await res.json();

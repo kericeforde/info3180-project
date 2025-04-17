@@ -89,12 +89,10 @@ async function fetchData(url, errorMessage) {
             'Failed to fetch profile data'
         );
         let user_id = localStorage.getItem('user_details_id');
-        console.log(user_id)
         favProfiles.value = await fetchData(
             `/api/users/${user_id}/favourites`,
             'Failed to fetch favorite profiles'
         );
-        console.log(favProfiles.value);
     } catch (err) {
         error.value = err.message;
     }
@@ -105,8 +103,7 @@ async function fetchData(url, errorMessage) {
   fetch(`/api/profiles/${userId}/favorite`, {
     method: 'POST',
     headers: {
-       
-      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
       'X-CSRFToken': csrf_token.value
     },
   })
