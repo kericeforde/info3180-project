@@ -419,7 +419,7 @@ def search():
             if birth_year:
                 query = query.filter(Profile.birth_year == birth_year)
             if sex:
-                query = query.filter(Profile.sex.ilike(f"%{sex}%"))
+                query = query.filter(Profile.sex.ilike(sex))
             if race:
                 query = query.filter(Profile.race.ilike(f"%{race}%"))
 
