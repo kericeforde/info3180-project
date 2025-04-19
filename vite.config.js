@@ -20,4 +20,5 @@ export default defineConfig({
     outDir: "app/static",
     emptyOutDir: true,
   },
+  base: './',
 });
