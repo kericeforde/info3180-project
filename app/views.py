@@ -80,6 +80,9 @@ def register():
         photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photoname)
         photo.save(photo_path)
 
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+
         # Add user to database
         user = Users(username=username, password=generate_password_hash(password, method='pbkdf2:sha256'), name=name, email=email, photo=photoname
                      )
